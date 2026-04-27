@@ -38,7 +38,7 @@ to monitor one other than the first.
 ./venv/bin/python -u tado_session.py
 
 # Poll every 30s for home 12345
-./venv/bin/python -u tado_session.py --interval 30 --home-id 12345
+./venv/bin/python -u tado_session.py --interval 30
 
 # One-shot: log in, print fresh tokens, exit
 ./venv/bin/python tado_session.py --once
