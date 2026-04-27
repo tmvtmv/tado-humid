@@ -246,17 +246,15 @@ def _summarize_zones(payload: dict[str, Any]) -> str:
 
 
 def poll_loop(headless: bool = True,
-              interval: float = POLL_INTERVAL_SECONDS,
-              home_id: int | None = None) -> None:
+              interval: float = POLL_INTERVAL_SECONDS) -> None:
     """Refresh the token as needed and call zoneStates once per `interval` seconds."""
     tok = load_or_login(headless=headless)
     print(f"[tado] logged in. Token expires in {tok.seconds_until_expiry():.0f}s")
-    if home_id is None:
-        ids = tok.home_ids()
-        if not ids:
-            raise SystemExit("No home ids found in token; pass --home-id explicitly.")
-        home_id = ids[0]
-        print(f"[tado] using home id {home_id} (from token; all: {ids})")
+    ids = tok.home_ids()
+    if not ids:
+        raise SystemExit("No home ids found in token.")
+    home_id = ids[0]
+    print(f"[tado] using home id {home_id} (from token; all: {ids})")
     path = f"/api/v2/homes/{home_id}/zoneStates?ngsw-bypass=true"
 
     while True:
@@ -300,8 +298,6 @@ def main() -> None:
     ap.add_argument("--show", action="store_true", help="show browser window during login")
     ap.add_argument("--interval", type=float, default=POLL_INTERVAL_SECONDS,
                     help=f"poll interval in seconds (default {POLL_INTERVAL_SECONDS})")
-    ap.add_argument("--home-id", type=int, default=None,
-                    help="Tado home id (default: derived from access token)")
     args = ap.parse_args()
 
     # Always start clean: stale tokens / browser state cause refresh loops on
@@ -313,7 +309,7 @@ def main() -> None:
 
     if args.probe:
         tok = load_or_login(headless=headless)
-        home_id = args.home_id or tok.home_ids()[0]
+        home_id = tok.home_ids()[0]
         r = api_get(tok, f"/api/v2/homes/{home_id}/zoneStates?ngsw-bypass=true")
         print(r.status_code)
         print(r.text[:1000])
@@ -326,7 +322,7 @@ def main() -> None:
         print(f"expires_in: {tok.seconds_until_expiry():.0f}s")
         return
 
-    poll_loop(headless=headless, interval=args.interval, home_id=args.home_id)
+    poll_loop(headless=headless, interval=args.interval)
 
 
 if __name__ == "__main__":

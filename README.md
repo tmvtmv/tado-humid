@@ -28,8 +28,7 @@ your-email@example.com:your-password
 ```
 
 The home id is read automatically from the `tado_homes` claim in the access
-token JWT. Override with `--home-id <id>` if you have multiple homes and want
-to monitor one other than the first.
+token JWT.
 
 ## Usage
 
