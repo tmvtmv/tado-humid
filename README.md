@@ -7,7 +7,9 @@ alive by hitting Tado's refresh-token endpoint directly.
 
 ## Installation
 
-Requires Python 3.10+.
+Requires Python 3.10+. Works on macOS and Linux.
+
+### macOS
 
 ```sh
 python3 -m venv venv
@@ -15,9 +17,24 @@ python3 -m venv venv
 ./venv/bin/playwright install chromium
 ```
 
-The `playwright install chromium` step downloads a ~100 MB headless Chromium
-into `~/Library/Caches/ms-playwright` (macOS) or `~/.cache/ms-playwright`
-(Linux). It only needs to run once per machine.
+Chromium is downloaded into `~/Library/Caches/ms-playwright` (~100 MB).
+
+### Linux
+
+```sh
+python3 -m venv venv
+./venv/bin/pip install -r requirements.txt
+./venv/bin/playwright install --with-deps chromium
+```
+
+Chromium is downloaded into `~/.cache/ms-playwright` (~100 MB). The
+`--with-deps` flag uses `apt`/`dnf` to install the system libraries Chromium
+needs (fonts, NSS, libxkbcommon, etc.) — it requires `sudo` and only supports
+Debian/Ubuntu and Fedora. On other distros, drop `--with-deps` and install the
+equivalent packages manually (see `playwright install-deps --dry-run`).
+
+The headless default means no X server / Wayland session is needed, so this
+also works on a bare server or inside a container.
 
 ## Configuration
 
